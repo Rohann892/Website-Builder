@@ -9,6 +9,10 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    avatar: {
+        type: String,
+        required: true,
+    },
     credits: {
         type: Number,
         default: 100,

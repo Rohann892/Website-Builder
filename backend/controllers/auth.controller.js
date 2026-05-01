@@ -18,12 +18,12 @@ export const googleAuth = async (req, res) => {
             })
         }
 
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "3*24*60*60*1000 " })
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "3d" })
 
         return res.cookie("token", token, {
             httpOnly: true,
-            secure: true,
-            sameSite: "strict",
+            secure: process.env.NODE_ENV === "production",
+            sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
             maxAge: 3 * 24 * 60 * 60 * 1000
         }).status(200).json({
             success: true,
@@ -31,8 +31,12 @@ export const googleAuth = async (req, res) => {
             user: user
         })
     } catch (error) {
-        console.log(error);
-        return res.status(500).json({ success: false, message: "internal server error" });
+        console.error("Google Auth Error:", error);
+        return res.status(500).json({ 
+            success: false, 
+            message: "internal server error",
+            error: error.message 
+        });
     }
 }
 
@@ -42,8 +46,8 @@ export const logout = async (_, res) => {
         return res.cookie("token", "", {
             maxAge: 0,
             httpOnly: true,
-            secure: true,
-            sameSite: "strict",
+            secure: process.env.NODE_ENV === "production",
+            sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
         }).status(200).json({
             success: true,
             message: 'User logged out successfully'
