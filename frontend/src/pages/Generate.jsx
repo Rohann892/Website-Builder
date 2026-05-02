@@ -1,9 +1,31 @@
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "motion/react";
+import { useState } from "react";
+import { serverUrl } from "../App.jsx";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 const Generate = () => {
   const navigate = useNavigate();
+
+  const [prompt, setPrompt] = useState("");
+
+  const handleGenerateWebsite = async () => {
+    try {
+      const { data } = await axios.post(
+        `${serverUrl}/api/v1/website/generate`,
+        { prompt },
+        { withCredentials: true },
+      );
+      setPrompt("");
+      console.log(data);
+      toast.success("Website generated!");
+    } catch (error) {
+      console.log(error);
+      toast.error(error.response?.data?.message || "Failed to generate");
+    }
+  };
   return (
     <div className="min-h-screen bg-linear-to-br from-[#050505] to via-[#0b0b0b] to-[#050505] text-white">
       <div className="sticky top-0 z-40 backdrop-blur-xl bg-black/50 border-b border-white/10">
@@ -47,6 +69,8 @@ const Generate = () => {
             <textarea
               name=""
               id=""
+              value={prompt}
+              onChange={(e) => setPrompt(e.target.value)}
               placeholder="Describe your website in details..."
               className="w-full h-56 p-6 rounded-3xl bg-black/60 border border-white/10 outline-none resize-none text-sm leading-relaxed focus-ring-2 focus-ring-white/20"
             ></textarea>
@@ -58,6 +82,7 @@ const Generate = () => {
             whileHover={{ scale: 1.09 }}
             whileTap={{ scale: 1.02 }}
             className="px-14 py-4 rounded-2xl font-semibold text-lg bg-white text-black cursor-pointer"
+            onClick={() => handleGenerateWebsite()}
           >
             Generate Website
           </motion.button>

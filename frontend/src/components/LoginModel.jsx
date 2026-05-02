@@ -5,8 +5,12 @@ import { auth, provider } from "../firebase";
 import axios from "axios";
 import { serverUrl } from "../App";
 import toast from "react-hot-toast";
+import { useDispatch } from "react-redux";
+import { setUserData } from "../redux/userSlice";
 
 const LoginModel = ({ open, onClose }) => {
+  const dispatch = useDispatch();
+
   const handleGoogleAuth = async () => {
     try {
       const res = await signInWithPopup(auth, provider);
@@ -19,17 +23,14 @@ const LoginModel = ({ open, onClose }) => {
         },
         { withCredentials: true },
       );
-      console.log(data);
       if (data.success) {
+        dispatch(setUserData(data.user));
         toast.success(data.message);
+        onClose();
       }
-      onClose();
-      window.location.reload();
     } catch (error) {
       console.error("Auth process failed:", error);
-      alert(
-        "Login failed: " + (error.response?.data?.message || error.message),
-      );
+      toast.error("Login failed: " + (error.response?.data?.message || error.message));
     }
   };
   return (

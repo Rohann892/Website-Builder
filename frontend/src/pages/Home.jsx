@@ -1,7 +1,8 @@
 import { motion, AnimatePresence } from "motion/react";
 import { useState } from "react";
 import LoginModel from "../components/LoginModel";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { setUserData } from "../redux/userSlice";
 import { Coins, Plus } from "lucide-react";
 import toast from "react-hot-toast";
 import { serverUrl } from "../App";
@@ -21,15 +22,18 @@ const Home = () => {
 
   const navigate = useNavigate();
 
+  const dispatch = useDispatch();
+
   const handleLogout = async () => {
     try {
-      const res = await axios.get(`${serverUrl}/api/v1/auth/logout`, {
+      await axios.get(`${serverUrl}/api/v1/auth/logout`, {
         withCredentials: true,
       });
-      console.log(res);
+      dispatch(setUserData(null));
+      toast.success("Logged out successfully");
     } catch (error) {
       console.log(error);
-      toast.error(error.response.data.message);
+      toast.error(error?.response?.data?.message || "Logout failed");
     }
   };
 
@@ -73,7 +77,7 @@ const Home = () => {
                   <img
                     src={
                       userData.avatar ||
-                      `http://ui-avatars.com/api/?name=${userData.name}&background=random`
+                      `https://ui-avatars.com/api/?name=${userData.name}&background=random`
                     }
                     alt=""
                     className="w-9 h-9 rounded-full border border-white/10 object-cover cursor-pointer"

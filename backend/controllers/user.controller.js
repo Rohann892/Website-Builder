@@ -1,3 +1,4 @@
+
 export const getCurrentUser = async (req, res) => {
     try {
         if (!req.user) {

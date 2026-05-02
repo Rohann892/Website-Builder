@@ -1,16 +1,17 @@
-import exprss from 'express';
+import express from 'express';
 import cookieParser from 'cookie-parser';
 import authRouter from './routes/auth.route.js';
 import userRouter from './routes/user.route.js'
+import websiteRouter from './routes/website.route.js'
 import cors from "cors"
 import dotenv from 'dotenv'
 import connectToDB from './config/db.js';
 dotenv.config();
 
 
-const app = exprss();
+const app = express();
 
-app.use(exprss.json());
+app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
     origin: "http://localhost:5173",
@@ -23,6 +24,7 @@ const PORT = process.env.PORT || 5000;
 
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/user', userRouter);
+app.use('/api/v1/website', websiteRouter);
 
 
 app.listen(PORT, () => {
